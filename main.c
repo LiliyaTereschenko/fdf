@@ -50,7 +50,7 @@ int		main(int argc, char **argv)
 #include <unistd.h>
 #include <math.h> 
 #include <stdlib.h>
-#define ABS(X) ((X >= 0) ? X : (-X))
+#define ABS(Value) (Value > 0) ? Value : -Value
 
 typedef struct		s_mlx
 {
@@ -62,31 +62,114 @@ static int sign(int x)
 {
 	if (x > 0) 
 		return (1);
-	else if (x == 0)
-		return (0);
 	else
 		return (-1);
+}
+
+static void draw_line_X(int x0, int y0, int x1, int y1, t_mlx *param)
+{
+	int err;
+	int dx;
+	int dy;
+	int sgn_y;
+//	int sgn_x;
+
+	dx = ((x1 - x0) > 0) ? (x1 - x0) : (x0 - x1);
+	dy = ((y1 - y0) > 0) ? (y1 - y0) : (y0 - y1);
+	sgn_y = ((y1 - y0) > 0) ? 1 : -1;
+//	sgn_x = sign(x1 - x0);
+	err = dx / 2;
+	while (x0 <= x1)
+	{
+		mlx_pixel_put(param->mlx, param->win, x0, y0, 0xFFAAFF);
+		err -= dy;
+		if (err < 0)
+		{
+			err += dx;
+			y0 += sgn_y;
+		}
+		x0++;
+	}
+}
+static void draw_line_Y(int x0, int y0, int x1, int y1, t_mlx *param)
+{
+	int err;
+	int dx;
+	int dy;
+	//int sgn_y;
+	int sgn_x;
+
+	dx = ((x1 - x0) > 0) ? (x1 - x0) : (x0 - x1);
+	dy = ((y1 - y0) > 0) ? (y1 - y0) : (y0 - y1);
+	//sgn_y = sign(y1 - y0);
+	sgn_x = ((x1 - x0) > 0) ? 1 : -1;
+	//sgn_x = sign(x1 - x0);
+	err = dy / 2;
+		while (y0 <= y1)
+		{
+			mlx_pixel_put(param->mlx, param->win, x0, y0, 0xBBFFFF);
+			err -= dx;
+			if (err < 0)
+			{
+				err += dy;
+				x0 += sgn_x;
+			}
+			y0++;
+		}
 }
 
 void	line(int x0, int y0, int x1, int y1, t_mlx *param)
 {
 	int dx;
 	int dy;
-	int sgn_x;
-	int sgn_y;
+	
+	dx = ((x1 - x0) > 0) ? (x1 - x0) : (x0 - x1);
+	dy = ((y1 - y0) > 0) ? (y1 - y0) : (y0 - y1);
+	if (dx > dy)
+	{
+		if (x0 > x1)
+			draw_line_X(x1, y1, x0, y0, param);
+		else
+			draw_line_X(x0, y0, x1, y1, param);
+	}
+	else
+	{
+		if (y0 > y1)
+			draw_line_Y(x1, y1, x0, y0, param);
+		else
+			draw_line_Y(x0, y0, x1, y1, param);
+	}
+	/*
+	int dx = x1 - x0;
+	int dy = y1 - y0;
+	int sgn_x = sign(dx);
+	int sgn_y = sign(dy);
+	int pdx;
+	int pdy;
 	int es;
 	int el;
-	int err;
+	int x;
+	int y;
 
-	dx = x1 - x0;
-	dy = y1 - y0;
-	sgn_x = sign(dx);
-	sgn_y = sign(dy);
 	dx = ABS(dx);
 	dy = ABS(dy);
-	el = (dx > dy) ? dx : dy;
-	es = (dx > dy) ? dy : dx;
-	err = el / 2;
+	if (dx > dy)
+	{
+		pdx = sgn_x;
+		pdy = 0;
+		el = dx;
+		es = dy;
+	}
+	else
+	{
+		pdx = 0;
+		pdy = sgn_y;
+		el = dy;
+		es = dx;
+	}
+	x = x0;
+	y = y0;
+	int err = el / 2;
 	mlx_pixel_put(param->mlx, param->win, x0, y0, 0xFFAAFF);
 	for (int t = 0; t < el; t++)
 	{
@@ -94,16 +177,16 @@ void	line(int x0, int y0, int x1, int y1, t_mlx *param)
 		if (err < 0)
 		{
 			err += el;
-			x0 += sgn_x;
-			y0 += sgn_y;
+			x += sgn_x;
+			y += sgn_y;
 		}
 		else
 		{
-			x0 += (dx > dy) ? sgn_x : 0;
-			y0 += (dx > dy) ? 0 : sgn_y;
+			x += pdx;
+			y += pdy;
 		}
-		mlx_pixel_put(param->mlx, param->win, x0, y0, 0xFFAAFF);
-	}
+		mlx_pixel_put(param->mlx, param->win, x, y, 0xFFAAFF);
+	}*/
 }
 
 void sun(int x0, int y0, t_mlx *param)
@@ -113,7 +196,7 @@ void sun(int x0, int y0, t_mlx *param)
    // int y0 = 250;
     int dx;
     int dy;
-    for(int i = 0; i < 360; i++)
+    for(int i = 0; i < 360; i+=5)
     {
         dx = r * cos(3.1415 * i/ 180.0);
         dy = r * sin(3.1415 * i/ 180.0);
