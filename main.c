@@ -36,10 +36,8 @@ void printFromHead(t_list *list)
 int		main(int argc, char **argv)
 {
 	t_point	**map;
-	// t_mlx	*param;
-	// int t = 250;
-	// int m = 700;
-	
+	t_mlx	*param;
+		
 	map = NULL;
 	if (argc == 2)
 	{
@@ -47,16 +45,19 @@ int		main(int argc, char **argv)
 		{
 			ft_print_map(map);
 			// printf(GREEN "success" RESET "\n");
-			// param = (t_mlx *)malloc(sizeof(t_mlx));
-			// param->mlx = mlx_init();
-			// param->win = mlx_new_window(param->mlx, m, m, "fdf");
-			// mlx_key_hook(param->win, deal_key, param);
-			// line(t, t, m - t, t, param);
+			param = (t_mlx *)malloc(sizeof(t_mlx));
+			param->mlx = mlx_init();
+			param->win = mlx_new_window(param->mlx, 700, 700, "fdf");
+			mlx_key_hook(param->win, deal_key, param);
+			ft_draw_figure(map, param);
+			
+			//line(100, 100, 300, 300, param);
 			// line(t, m - t, m - t, m - t, param);
 			// line(t, t, t, m - t, param);
 			// line(m - t, t, m - t, m - t, param);
-			// //sun(350, 350, param);
-			// mlx_loop(param->mlx);
+			//sun(350, 350, param);
+			printf("-------------\n");
+			mlx_loop(param->mlx);
 		}
 		else
 			ft_putstr("error\n");

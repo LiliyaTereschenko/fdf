@@ -109,6 +109,5 @@ int			ft_read_map(char *file_name, t_point ***map)
 	close(fd);
 	if (!ft_create_matrix(begin, map))
 		return (0);
-	ft_print_map(*map);
 	return (1);
 }

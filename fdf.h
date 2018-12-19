@@ -38,6 +38,7 @@ typedef struct	s_mlx
 
 int             ft_read_map(char *file_name, t_point ***map);
 void			line(int x0, int y0, int x1, int y1, t_mlx *param);
+void			ft_draw_figure(t_point **map, t_mlx *param);
 
 
 
