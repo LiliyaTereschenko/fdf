@@ -12,13 +12,15 @@
 
 FLAGS = -Wall -Wextra -Werror
 NAME = fdf
+LIBS = -L /usr/local/lib -lm -framework OpenGL -framework AppKit -L /usr/local/lib -lmlx
 
 all: $(NAME)
 
 $(NAME):
 	make -C libft/ fclean && make -C libft/
-	gcc $(FLAGS) -c main.c *.c
-	gcc -o $(NAME) *.o -L libft/ -lft
+	gcc -o $(NAME) *.c  $(FLAGS) $(LIBS) libft/libft.a
+	
+	
 
 clean:
 	rm -f *.o

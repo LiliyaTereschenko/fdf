@@ -16,23 +16,37 @@
 # include "libft/libft.h"
 # include <fcntl.h>
 # include <stdlib.h>
+# include "mlx.h"
+# include <math.h> 
+
+
 # define BUFF_SIZE 32
 
 typedef struct	s_point
 {
+	int 		x;
+	int			y;
 	int         z;
-	char        *color;
+	int        	color;
 }				t_point;
 
+typedef struct	s_mlx
+{
+	void		*mlx;
+	void		*win;
+}				t_mlx;
 
-void            ft_print_map(char **map);
 int             ft_read_map(char *file_name, t_point ***map);
+void			line(int x0, int y0, int x1, int y1, t_mlx *param);
 
 
 
-
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 void           printFromHead(t_list *list);
-#include <stdio.h> //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+void           ft_print_map(t_point **map);
+
+#include <stdio.h> 
+#include <unistd.h>
 #define GREEN   "\x1b[32m"
 #define RESET   "\x1b[0m"
 

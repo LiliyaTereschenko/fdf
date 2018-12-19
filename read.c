@@ -34,32 +34,46 @@ static int	ft_create_matrix(t_list *begin_list, t_point ***map)
 	int		max_x;
 	int		max_y;
 	int		i;
+	int		j;
 	char	**arr;
 
 	list = begin_list;
 	max_y = ft_lst_size(list);
 	max_x = ft_max_x(list->content);
 
-	printf("max_x = %d\n", max_x);
-	printf("max_y = %d\n", max_y); 
+	//printf("max_x = %d\n", max_x);
+	//printf("max_y = %d\n", max_y); 
 
-	if (!(*map = (t_point **)malloc(sizeof(t_point *) * max_y)))
+	if (!(*map = (t_point **)malloc(sizeof(t_point *) * (max_y + 1))))
 		return (0);
+	if (!(*map[0] = (t_point *)malloc(sizeof(t_point))))
+			return (0);
+	(*map)[0][0].x = max_x;
+	(*map)[0][0].y = max_y;
+	//printf("%d %d\n", (*map)[0][0].x, (*map)[0][0].y);
+	i = 1;
 	while (list)
-	{
-		if (!(**map = (t_point *)malloc(sizeof(t_point) * max_x)))
+	{	
+		j = 0;
+		//printf("begin i = %d, j = %d\n", i, j);
+		if (!(((*map)[i]) = (t_point *)malloc(sizeof(t_point) * max_x)))
 			return (0);
 		arr = ft_strsplit(list->content, ' ');
-		i = 0;
-		while (i < max_x)
+		
+		while (j < max_x)
 		{
-			(**map)[i].z = ft_atoi(arr[i]);
-			//printf("%d ", (**map)[i].z);
-			i++;
+			//printf("i = %d, j = %d\n", i, j);
+			(*map)[i][j].x = j;
+			(*map)[i][j].y = i - 1;
+			(*map)[i][j].z = ft_atoi(arr[j]);
+			//printf("%d %d %d	\n", (*map)[i][j].x, (*map)[i][j].y, (*map)[i][j].z);
+			j++;
 		}
 		//printf("\n");
 		list = list->next;
+		i++;
 	}
+	//ft_print_map(*map);
 	printf("malloc for matrix - " GREEN "done" RESET "\n");
 	printf("matrix full - " GREEN "done" RESET "\n");
 	return (1);
@@ -95,5 +109,6 @@ int			ft_read_map(char *file_name, t_point ***map)
 	close(fd);
 	if (!ft_create_matrix(begin, map))
 		return (0);
+	ft_print_map(*map);
 	return (1);
 }

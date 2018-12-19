@@ -1,23 +1,22 @@
 #include "fdf.h"
 
-void ft_print_map(char **map)
+void ft_print_map(t_point **map)
 {
     int i;
     int j;
 
     i = 1;
-    j = 0;
-    while (i < map[0][1])
+    
+    printf("x_max = %d, y_max = %d\n", map[0][0].x, map[0][0].y);
+    while (i < map[0][0].y + 1)
     {
         j = 0;
-        while (j < map[0][0])
+        while (j < map[0][0].x)
         {
-            ft_putnbr(ft_atoi(&map[i][j]));
-            ft_putchar(' ');
+            printf("%d %d %d       ", map[i][j].x, map[i][j].y, map[i][j].z);
             j++;
-
         }
         i++;
-        ft_putchar('\n');
+        printf("\n");
     }
 }
