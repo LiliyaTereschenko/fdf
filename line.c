@@ -83,18 +83,3 @@ void	line(int x0, int y0, int x1, int y1, t_mlx *param)
 			draw_line_Y(x0, y0, x1, y1, param);
 	}
 }
-
-/*
-void sun(int x0, int y0, t_mlx *param)
-{
-	float r = 200;
-    int dx;
-    int dy;
-    for(int i = 0; i < 360; i+=5)
-    {
-        dx = r * cos(3.1415 * i/ 180.0);
-        dy = r * sin(3.1415 * i/ 180.0);
-        line(x0, y0, x0 + dx, y0 + dy, param);
-    }
-}
-*/

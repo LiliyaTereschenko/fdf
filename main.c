@@ -6,61 +6,94 @@
 /*   By: kkihn <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/07 12:42:20 by kkihn             #+#    #+#             */
-/*   Updated: 2018/12/13 15:19:56 by kkihn            ###   ########.fr       */
+/*   Updated: 2018/12/25 11:58:57 by kkihn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "fdf.h"
 
-int deal_key(int key, t_mlx *param)
+void		print_menu(t_mlx *fdf)
 {
-	if (key == 53)
+	int	i;
+
+	i = 0;
+	while (i < 2560)
 	{
-		mlx_destroy_window(param->mlx, param->win);
-		exit (0);
+		mlx_pixel_put(fdf->mlx, fdf->win, i, 50, 0xFFAAFF);
+		i++;
 	}
-	//write(1, "X", 1);
-	return (0);
+	mlx_string_put(fdf->mlx, fdf->win, 30, 15, 0xFFAAFF, "KEY PRESS:");
+	mlx_string_put(fdf->mlx, fdf->win, 140, 15, 0xFFAAFF, "rotation:");
+	mlx_string_put(fdf->mlx, fdf->win, 240, 15, 0xBBFFFF, "Ox - 1 2, Oy - 4 5, \
+		Oz - 7 8");
+	mlx_string_put(fdf->mlx, fdf->win, 550, 15, 0xFFAAFF, "zoom:");
+	mlx_string_put(fdf->mlx, fdf->win, 600, 15, 0xBBFFFF, " + - ");
 }
 
-void printFromHead(t_list *list) 
+int			ft_make_copy(t_mlx *fdf)
 {
-	while (list)
+	int i;
+	int j;
+
+	i = 0;
+	(fdf->map_tmp) = (t_point **)malloc(sizeof(t_point *) * (fdf->max_Y));
+	if (!(fdf->map_tmp))
+		return (0);
+	while (i < fdf->max_Y)
 	{
-		printf("%s\n", list->content);
-		list = list->next;
+		j = 0;
+		(fdf->map_tmp)[i] = (t_point *)malloc(sizeof(t_point) * (fdf->max_X));
+		if (!(fdf->map_tmp)[i])
+			return (0);
+		while (j < fdf->max_X)
+		{
+			(fdf->map_tmp)[i][j].x = (fdf->map)[i][j].x;
+			(fdf->map_tmp)[i][j].y = (fdf->map)[i][j].y;
+			(fdf->map_tmp)[i][j].z = (fdf->map)[i][j].z;
+			j++;
+		}
+		i++;
 	}
+	return (1);
 }
 
-int		main(int argc, char **argv)
+static void	ft_init_structure(t_mlx *fdf)
+{
+	fdf->ang_X = 0;
+	fdf->ang_Y = 0;
+	fdf->ang_Z = 0;
+	fdf->win_size_x = (fdf->max_X * 70) < 2000 ? fdf->max_X * 70 : 2000;
+	fdf->win_size_y = (fdf->max_Y * 70) < 1200 ? fdf->max_Y * 70 : 1200;
+	fdf->zoom = (fdf->max_Y * 70) < 1200 ? fdf->max_Y : 2;
+	fdf->mlx = mlx_init();
+	fdf->win = mlx_new_window(fdf->mlx, fdf->win_size_x, fdf->win_size_y,\
+		"fdf");
+	fdf->start_X = fdf->win_size_x / 2;
+	fdf->start_Y = fdf->win_size_y / 2;
+}
+
+int			main(int argc, char **argv)
 {
 	t_point	**map;
-	t_mlx	*param;
-		
+	t_mlx	*fdf;
+
+	fdf = (t_mlx *)malloc(sizeof(t_mlx));
 	map = NULL;
 	if (argc == 2)
 	{
-		if ((ft_read_map(argv[1], &map)))
+		if ((ft_read_map(argv[1], &map, fdf)))
 		{
-			ft_print_map(map);
-			// printf(GREEN "success" RESET "\n");
-			param = (t_mlx *)malloc(sizeof(t_mlx));
-			param->mlx = mlx_init();
-			param->win = mlx_new_window(param->mlx, 700, 700, "fdf");
-			mlx_key_hook(param->win, deal_key, param);
-			ft_draw_figure(map, param);
-			
-			//line(100, 100, 300, 300, param);
-			// line(t, m - t, m - t, m - t, param);
-			// line(t, t, t, m - t, param);
-			// line(m - t, t, m - t, m - t, param);
-			//sun(350, 350, param);
-			printf("-------------\n");
-			mlx_loop(param->mlx);
+			ft_init_structure(fdf);
+			fdf->map = map;
+			print_menu(fdf);
+			ft_make_copy(fdf);
+			ft_change_matrix(fdf);
+			mlx_key_hook(fdf->win, ft_press_key, fdf);
+			ft_draw_figure(fdf->map_tmp, fdf);
+			mlx_loop(fdf->mlx);
 		}
 		else
-			ft_putstr("error\n");
+			ft_putendl_fd("error", 2);
 	}
 	else
 		ft_putstr("usage: ./fdf file_name\n");

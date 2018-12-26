@@ -1,69 +1,81 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   draw.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kkihn <marvin@42.fr>                       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/12/25 11:58:22 by kkihn             #+#    #+#             */
+/*   Updated: 2018/12/25 14:02:04 by kkihn            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "fdf.h"
 
-void ft_draw_figure(t_point **map, t_mlx *param)
+static void	ft_change_z(t_mlx *fdf, int i, int j)
 {
-    int i;
-    int j;
-    int start;
-    int wide;
-    i = 1;
+	(fdf->map_tmp)[i][j].z = ((fdf->map)[i][j].x * (sin(fdf->ang_X) *\
+				sin(fdf->ang_Z) - cos(fdf->ang_X) * sin(fdf->ang_Y) *\
+				cos(fdf->ang_Z)) + (fdf->map)[i][j].y * (cos(fdf->ang_X) *\
+				sin(fdf->ang_Y) * sin(fdf->ang_Z) + sin(fdf->ang_X) *\
+				cos(fdf->ang_Z)) + (fdf->map)[i][j].z * cos(fdf->ang_X) *\
+				cos(fdf->ang_Y)) * (fdf->zoom);
+}
 
-    start = 0;
-    wide = 10;
-    printf("x_max = %d, y_max = %d\n", map[0][0].x, map[0][0].y);
-    while (i < map[0][0].y + 1)
-    {
-        j = 0;
-        while (j < map[0][0].x)
-        {   
-            map[i][j].x = (map[i][j].x) * wide + start;
-            map[i][j].y = (map[i][j].y) * wide + start;
-            j++;        
-        }
-        i++;
-    }
+void		ft_change_matrix(t_mlx *fdf)
+{
+	int i;
+	int j;
 
- /*   i = 1;
-    while (i < map[0][0].y + 1)
-    {
-        j = 0;
-        while (j < map[0][0].x)
-        {   
-            printf("i = %d, j = %d, x = %d, y = %d\n", i,j,map[i][j].x, map[i][j].y);
-            //line(map[i][j].x + start, map[i][j].y + start, map[i][j + 1].x + start, map[i][j + 1].y + start, param);
-            //line(map[i][j].x, map[i][j].y, map[i + 1][j].x, map[i + 1][j].y, param);
-            j++;
-           
-        }
-        i++;
-    }
-*/
-    i = 1;
-    
-    printf("x_max = %d, y_max = %d\n", map[0][0].x, map[0][0].y);
-    while (i < map[0][0].y + 1)
-    {
-        j = 0;
-        while (j < map[0][0].x - 1)
-        {
-            printf("a[ %d; %d ], b[ %d; %d ]\n", map[i][j].x, map[i][j].y, map[i][j + 1].x, map[i][j + 1].y);
-            line(map[i][j].x, map[i][j].y, map[i][j + 1].x, map[i][j + 1].y, param);
-            j++;
-        }
-        i++;
-        printf("\n");
-    }
-    j = 0;
-    while (j < map[0][0].x)
-    {
-        i = 1;
-        while (i < map[0][0].y)
-        {
-            printf("a[ %d; %d ], b[ %d; %d ]\n", map[i][j].x, map[i][j].y, map[i + 1][j].x, map[i + 1][j].y);
-            line(map[i][j].x, map[i][j].y, map[i + 1][j].x, map[i + 1][j].y, param);
-            i++;
-        }
-        j++;
-        printf("\n");
-    }
+	i = 0;
+	while (i < fdf->max_Y)
+	{
+		j = 0;
+		while (j < fdf->max_X)
+		{
+			(fdf->map_tmp)[i][j].x = ((fdf->map)[i][j].x * cos(fdf->ang_Y) *\
+					cos(fdf->ang_Z) - (fdf->map)[i][j].y * cos(fdf->ang_Y) *\
+					sin(fdf->ang_Z) + (fdf->map)[i][j].z * sin(fdf->ang_Y)) *\
+					(fdf->zoom) + fdf->start_X;
+			(fdf->map_tmp)[i][j].y = ((fdf->map)[i][j].x * (sin(fdf->ang_X) *\
+						sin(fdf->ang_Y) * cos(fdf->ang_Z) + cos(fdf->ang_X) *\
+						sin(fdf->ang_Z)) + (fdf->map)[i][j].y *\
+						(cos(fdf->ang_X) * cos(fdf->ang_Z) - sin(fdf->ang_X) *\
+						sin(fdf->ang_Y) * sin(fdf->ang_Z)) -\
+						(fdf->map)[i][j].z * cos(fdf->ang_Y) * sin(fdf->ang_X))\
+						* (fdf->zoom) + fdf->start_Y;
+			ft_change_z(fdf, i, j);
+			j++;
+		}
+		i++;
+	}
+}
+
+void		ft_draw_figure(t_point **m, t_mlx *fdf)
+{
+	int i;
+	int j;
+
+	i = 0;
+	while (i < fdf->max_Y)
+	{
+		j = 0;
+		while (j < fdf->max_X - 1)
+		{
+			line(m[i][j].x, m[i][j].y, m[i][j + 1].x, m[i][j + 1].y, fdf);
+			j++;
+		}
+		i++;
+	}
+	j = 0;
+	while (j < fdf->max_X)
+	{
+		i = 0;
+		while (i < fdf->max_Y - 1)
+		{
+			line(m[i][j].x, m[i][j].y, m[i + 1][j].x, m[i + 1][j].y, fdf);
+			i++;
+		}
+		j++;
+	}
 }
